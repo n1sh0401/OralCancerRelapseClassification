@@ -13,7 +13,7 @@ def load_artifacts():
     preprocessor = joblib.load("preprocessor.joblib")
     return model, preprocessor
 
-
+ 
 model, preprocessor = load_artifacts()
 
 FEATURE_COLUMNS = [
