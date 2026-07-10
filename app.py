@@ -120,8 +120,27 @@ def load_artifacts():
     base_path = Path(__file__).resolve().parent
     model_path = base_path / "oscc_LR_model.joblib"
     preprocessor_path = base_path / "preprocessor.joblib"
-
     model = joblib.load(model_path)
+
+    # Compatibility shim: some sklearn versions changed internal helper class names
+    # (e.g. _RemainderColsList) which can break unpickling. Define a lightweight
+    # fallback in the sklearn.compose._column_transformer module so joblib can
+    # reconstruct the preprocessor object. Prefer fixing sklearn versions in
+    # production; this is a pragmatic runtime workaround.
+    try:
+        import sklearn.compose._column_transformer as _ct
+
+        if not hasattr(_ct, "_RemainderColsList"):
+            class _RemainderColsList(list):
+                """Compatibility placeholder for older/newer sklearn pickles."""
+
+                pass
+
+            _ct._RemainderColsList = _RemainderColsList
+    except Exception:
+        # If the shim cannot be applied, loading may still fail below.
+        pass
+
     preprocessor = joblib.load(preprocessor_path)
     return model, preprocessor
 
