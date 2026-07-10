@@ -1,7 +1,7 @@
-pandas
+pandas<2.2.0
 numpy
-scikit-learn==1.6.1
-xgboost==3.2.0
+scikit-learn
+xgboost
 shap
 matplotlib
 seaborn
